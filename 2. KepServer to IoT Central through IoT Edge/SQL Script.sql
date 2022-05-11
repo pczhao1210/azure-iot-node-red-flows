@@ -17,8 +17,9 @@ CREATE TABLE [dbo].[DeviceData](
 	[RunningStatus] [nvarchar](255) NULL,
 	[CountGood] [int] NULL,
 	[CountBad] [int] NULL,
-	[Frequency] [int] NULL,
-	[SourceTimestamp] [datetime2](7) NULL
+	[TimeOn] [int] NULL,
+	[TimeOff] [int] NULL,
+	[SourceTimestamp] [datetime2](7) NULL)
 GO
 
 /*Check Data Retention Policy from database wide*/

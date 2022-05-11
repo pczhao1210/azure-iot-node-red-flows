@@ -25,7 +25,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1652172130093,
+  "iteration": 1652265205858,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -90,7 +90,7 @@
             "uid": "CcaeK1Unz"
           },
           "format": "time_series",
-          "rawSql": "SELECT  \r\nMIN(SourceTimestamp) AS time,\r\nNodeID, \r\n/*sum(CountGood)*1.0/(sum(CountGood)+sum(CountBad)) AS Quality,\r\n(sum(CountGood)+sum(CountBad))*1.0/$idealRunrate AS Performaance,\r\nSUM(Frequency)*1.0/60 AS Availability,*/\r\n(SUM(Frequency)*1.0/60)*((sum(CountGood)+sum(CountBad))*1.0/$idealRunrate)*(sum(CountGood)*1.0/(sum(CountGood)+sum(CountBad))) AS OEE\r\nFROM dbo.DeviceData\r\nwhere SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID' and RunningStatus = 'On'\r\nGROUP BY NodeID, RunningStatus, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY time",
+          "rawSql": "SELECT  \r\nMIN(SourceTimestamp) AS time,\r\nNodeID, \r\n/*sum(CountGood)*1.0/(sum(CountGood)+sum(CountBad)) AS Quality,\r\n(sum(CountGood)+sum(CountBad))*1.0/$idealRunrate AS Performaance,\r\nSUM(Frequency)*1.0/60 AS Availability,*/\r\n(SUM(TimeOn)*1.0/60)*((sum(CountGood)+sum(CountBad))*1.0/$idealRunrate)*(ISNULL((sum(CountGood)*1.0)/NULLIF((sum(CountGood)+sum(CountBad)),0),0)) AS OEE\r\nFROM dbo.DeviceData\r\nwhere SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID'\r\nGROUP BY NodeID, RunningStatus, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY time",
           "refId": "A"
         }
       ],
@@ -161,7 +161,7 @@
             "uid": "CcaeK1Unz"
           },
           "format": "time_series",
-          "rawSql": "SELECT  \r\nMIN(SourceTimestamp) AS time,\r\nNodeID, \r\nsum(CountGood)*1.0/(sum(CountGood)+sum(CountBad)) AS Quality,\r\n(sum(CountGood)+sum(CountBad))*1.0/$idealRunrate AS Performaance,\r\nSUM(Frequency)*1.0/60 AS Availability\r\nFROM dbo.DeviceData\r\nwhere SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID' and RunningStatus = 'On'\r\nGROUP BY NodeID, RunningStatus, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY time",
+          "rawSql": "SELECT  \r\nMIN(SourceTimestamp) AS time,\r\nNodeID, \r\nISNULL((sum(CountGood)*1.0)/NULLIF((sum(CountGood)+sum(CountBad)),0),0) AS Quality,\r\n(sum(CountGood)+sum(CountBad))*1.0/$idealRunrate AS Performaance,\r\nSUM(TimeOn)*1.0/60 AS Availability\r\nFROM dbo.DeviceData\r\nwhere SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID'\r\nGROUP BY NodeID, RunningStatus, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY time",
           "refId": "C"
         }
       ],
@@ -258,7 +258,8 @@
             "uid": "CcaeK1Unz"
           },
           "format": "time_series",
-          "rawSql": "SELECT  \r\nMIN(SourceTimestamp) AS time,\r\nNodeID, \r\nRunningStatus,\r\n/*COUNT(RunningStatus) AS RunningStatusCount,*/\r\nSUM(Frequency)*1.0/60 AS Availability\r\nFROM dbo.DeviceData\r\nwhere SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID' and RunningStatus = 'On'\r\nGROUP BY NodeID, RunningStatus, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY time",
+          "hide": false,
+          "rawSql": "SELECT  \r\nMIN(SourceTimestamp) AS time,\r\nNodeID, \r\n/*COUNT(RunningStatus) AS RunningStatusCount,*/\r\nSUM(TimeOn)*1.0/60 AS MachineOn\r\n/*SUM(TimeOff)*1.0/60 AS MachineOff*/\r\nFROM dbo.DeviceData\r\nWHERE SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID'\r\nGROUP BY NodeID, TimeOn, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY time",
           "refId": "A"
         }
       ],
@@ -345,7 +346,8 @@
             "uid": "CcaeK1Unz"
           },
           "format": "time_series",
-          "rawSql": "SELECT  \r\nMIN(SourceTimestamp) AS time,\r\nNodeID, \r\nRunningStatus,\r\n/*COUNT(RunningStatus) AS RunningStatusCount,*/\r\nSUM(Frequency) AS 'StatusON'\r\nFROM dbo.DeviceData\r\nwhere SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID' and RunningStatus = 'On'\r\nGROUP BY NodeID, RunningStatus, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY time",
+          "hide": false,
+          "rawSql": "SELECT  \r\nMIN(SourceTimestamp) AS time,\r\nNodeID, \r\n/*COUNT(RunningStatus) AS RunningStatusCount,*/\r\nSUM(TimeOn) AS 'MachineOn'\r\nFROM dbo.DeviceData\r\nwhere SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID'\r\nGROUP BY NodeID, TimeOn, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY time",
           "refId": "A"
         },
         {
@@ -356,7 +358,7 @@
           },
           "format": "time_series",
           "hide": false,
-          "rawSql": "SELECT  \r\nMIN(SourceTimestamp) AS time,\r\nNodeID, \r\nRunningStatus,\r\n/*COUNT(RunningStatus) AS RunningStatusCount,*/\r\nSUM(Frequency) AS 'StatusOFF'\r\nFROM dbo.DeviceData\r\nwhere SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID' and RunningStatus = 'Off'\r\nGROUP BY NodeID, RunningStatus, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY time",
+          "rawSql": "SELECT  \r\nMIN(SourceTimestamp) AS time,\r\nNodeID, \r\n/*COUNT(RunningStatus) AS RunningStatusCount,*/\r\nSUM(TimeOff) AS 'MachineOff'\r\nFROM dbo.DeviceData\r\nwhere SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID'\r\nGROUP BY NodeID, TimeOff, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY time",
           "refId": "B"
         }
       ],
@@ -424,7 +426,7 @@
             "uid": "CcaeK1Unz"
           },
           "format": "time_series",
-          "rawSql": "SELECT  MIN(SourceTimestamp) AS time,\r\nNodeID, \r\nsum(CountGood)*1.0/(sum(CountGood)+sum(CountBad)) AS Quality\r\nFROM dbo.DeviceData\r\nwhere SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID'\r\nGROUP BY NodeID, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY Time",
+          "rawSql": "SELECT  MIN(SourceTimestamp) AS time,\r\nNodeID, \r\nISNULL((sum(CountGood)*1.0)/NULLIF((sum(CountGood)+sum(CountBad)),0),0) AS Quality\r\nFROM dbo.DeviceData\r\nwhere SourceTimestamp BETWEEN $__timeFrom() and $__timeTo() and NodeID = '$NodeID'\r\nGROUP BY NodeID, dateadd(minute,(datediff(minute,0,SourceTimestamp)/1)*1,0)\r\nORDER BY Time",
           "refId": "A"
         }
       ],
@@ -775,7 +777,7 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
@@ -794,6 +796,6 @@
   "timezone": "",
   "title": "Asset Performance",
   "uid": "SntmArnGk",
-  "version": 13,
+  "version": 14,
   "weekStart": ""
 }

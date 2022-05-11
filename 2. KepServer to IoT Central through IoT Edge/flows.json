@@ -551,7 +551,7 @@
             },
             {
                 "output": false,
-                "name": "Frequency",
+                "name": "TimeOn",
                 "type": "int",
                 "valueType": "num",
                 "value": "0",
@@ -566,6 +566,19 @@
                 "output": false,
                 "name": "SourceTimestamp",
                 "type": "DateTime2",
+                "valueType": "num",
+                "value": "0",
+                "options": {
+                    "nullable": true,
+                    "primary": false,
+                    "identity": false,
+                    "readOnly": false
+                }
+            },
+            {
+                "output": false,
+                "name": "TimeOff",
+                "type": "int",
                 "valueType": "num",
                 "value": "0",
                 "options": {
@@ -606,7 +619,7 @@
         "type": "function",
         "z": "bbd9966509e94b36",
         "name": "SQL Formatter",
-        "func": "var time = new Date().toISOString();\nvar countgood_addr = \"ns=2;s=MES OEE.OEE-CNC1.CountGood\"\nvar countbad_addr = \"ns=2;s=MES OEE.OEE-CNC1.CountBad\";\nvar runningstatus_addr = \"ns=2;s=MES OEE.OEE-CNC1.RunningStatus\";\nvar countgood = msg.payload[countgood_addr];\nvar countbad = msg.payload[countbad_addr];\nvar runningstatus = msg.payload[runningstatus_addr];\nvar msg_interval = msg.payload.msg_inverval;\n\nif (runningstatus == 1)\n    {\n        machine_status = 'On';\n    }\nelse\n    {\n        machine_status= 'Off';\n    }\n\n\nconst status_msg = [{\n    'NodeID' : 'CNC1',\n    'RunningStatus' : machine_status,\n    'CountGood' : countgood,\n    'CountBad' : countbad,\n    'Frequency' : msg_interval,\n    'SourceTimestamp' : time\n}];\n\nmsg.payload = status_msg;\nreturn msg\n",
+        "func": "var time = new Date().toISOString();\nvar countgood_addr = \"ns=2;s=MES OEE.OEE-CNC1.CountGood\"\nvar countbad_addr = \"ns=2;s=MES OEE.OEE-CNC1.CountBad\";\nvar runningstatus_addr = \"ns=2;s=MES OEE.OEE-CNC1.RunningStatus\";\nvar countgood = msg.payload[countgood_addr];\nvar countbad = msg.payload[countbad_addr];\nvar runningstatus = msg.payload[runningstatus_addr];\nvar msg_interval = msg.payload.msg_inverval;\n\nif (runningstatus == 1)\n    {\n        machine_status = 'On';\n        TimeOn = msg_interval;\n        TimeOff = 0\n    }\nelse\n    {\n        machine_status= 'Off';\n        TimeOn = 0;\n        TimeOff = msg_interval\n    }\n\n\nconst status_msg = [{\n    'NodeID' : 'CNC1',\n    'RunningStatus' : machine_status,\n    'CountGood' : countgood,\n    'CountBad' : countbad,\n    'TimeOn' : TimeOn,\n    'TimeOff' : TimeOff,\n    'SourceTimestamp' : time\n}];\n\nmsg.payload = status_msg;\nreturn msg\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -934,7 +947,7 @@
         "type": "function",
         "z": "bbd9966509e94b36",
         "name": "Status Output",
-        "func": "var time = new Date().toISOString();\nvar countgood_addr = \"ns=2;s=MES OEE.OEE-CNC1.CountGood\"\nvar countbad_addr = \"ns=2;s=MES OEE.OEE-CNC1.CountBad\";\nvar runningstatus_addr = \"ns=2;s=MES OEE.OEE-CNC1.RunningStatus\";\nvar countgood = msg.payload[countgood_addr];\nvar countbad = msg.payload[countbad_addr];\nvar runningstatus = msg.payload[runningstatus_addr];\nvar msg_interval = msg.payload.msg_inverval;\n\nif (runningstatus == 1)\n    {\n        machine_status = 'On';\n    }\nelse\n    {\n        machine_status= 'Off';\n    }\n\n\nconst status_msg = {\n    'NodeID' : 'CNC1',\n    'RunningStatus' : machine_status,\n    'CountGood' : countgood,\n    'CountBad' : countbad,\n    'Frequency' : msg_interval,\n    'SourceTimestamp' : time\n};\n\nmsg.payload = status_msg;\nreturn msg\n",
+        "func": "var time = new Date().toISOString();\nvar countgood_addr = \"ns=2;s=MES OEE.OEE-CNC1.CountGood\"\nvar countbad_addr = \"ns=2;s=MES OEE.OEE-CNC1.CountBad\";\nvar runningstatus_addr = \"ns=2;s=MES OEE.OEE-CNC1.RunningStatus\";\nvar countgood = msg.payload[countgood_addr];\nvar countbad = msg.payload[countbad_addr];\nvar runningstatus = msg.payload[runningstatus_addr];\nvar msg_interval = msg.payload.msg_inverval;\n\nif (runningstatus == 1)\n    {\n        machine_status = 'On';\n        TimeOn = msg_interval;\n        TimeOff = 0\n    }\nelse\n    {\n        machine_status= 'Off';\n        TimeOn = 0;\n        TimeOff = msg_interval\n    }\n\n\nconst status_msg = {\n    'NodeID' : 'CNC1',\n    'RunningStatus' : machine_status,\n    'CountGood' : countgood,\n    'CountBad' : countbad,\n    'TimeOn' : TimeOn,\n    'TimeOff' : TimeOff,\n    'SourceTimestamp' : time\n};\n\nmsg.payload = status_msg;\nreturn msg\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
